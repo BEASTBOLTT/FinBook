@@ -2,7 +2,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
 
-const Transactions = ({ transactions, addTransaction, editTransaction, deleteTransaction, isAdmin }) => {
+const Transactions = ({ transactions, addTransaction, editTransaction, deleteTransaction, isAdmin, openAddModal }) => {
 
     // CSV Function
     function handleExportCSV() {
@@ -56,14 +56,6 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
     // useStates
     const [editingT, setEditingT] = useState(null);
     const [formData, setFormData] = useState(null);
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [newT, setNewT] = useState({
-        title: "",
-        amount: "",
-        category: "",
-        type: "expense",
-        date: ""
-    });
     const [searchQuery, setSearchQuery] = useState("");
     const [filterType, setFilterType] = useState("all");
     const [showExportMenu, setShowExportMenu] = useState(false);
@@ -76,11 +68,11 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
             transaction.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             transaction.category.toLowerCase().includes(searchQuery.toLowerCase())
         );
-    });
+    })
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (
     <div className='bg-[#0A0A0A] border-l border-[#666B74] w-full'>
-        
         {/* Sub Heading & Button */}
         <div className='flex'>
             <div>
@@ -92,7 +84,7 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
                   
                   {isAdmin && (
                       <button
-                          onClick={() => setShowAddModal(true)}
+                          onClick={openAddModal}
                           className="bg-[#D4AF37] text-black px-3 py-1 rounded-lg m-5 mr-1 hover:bg-[#a98e35]"
                       >
                           + Add Transaction
@@ -293,90 +285,7 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
                 </div>
             </div>
         )}
-        {/* Adding Transaction */}
-        {showAddModal && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-                <div className="bg-[#111111] p-6 rounded-xl w-96">
-                    <h2 className="text-white text-xl mb-4">Add Transaction</h2>
-                    <input
-                        type="text"
-                        placeholder="Title"
-                        className="w-full mb-3 p-2 bg-black text-white border border-gray-600 rounded"
-                        value={newT.title}
-                        onChange={(e) =>
-                            setNewT(prev => ({ ...prev, title: e.target.value }))
-                        }/>
-
-                    
-                    <input
-                        type="number"
-                        placeholder="Amount"
-                        className="w-full mb-3 p-2 bg-black text-white border border-gray-600 rounded"
-                        value={newT.amount}
-                        onChange={(e) =>
-                            setNewT(prev => ({ ...prev, amount: Number(e.target.value) }))
-                        }/>
-
-                    
-                    <input
-                        type="text"
-                        placeholder="Category"
-                        className="w-full mb-3 p-2 bg-black text-white border border-gray-600 rounded"
-                        value={newT.category}
-                        onChange={(e) =>
-                            setNewT(prev => ({ ...prev, category: e.target.value }))
-                        } />
-
-                    
-                    <select
-                        className="w-full mb-3 p-2 bg-black text-white border border-gray-600 rounded"
-                        value={newT.type}
-                        onChange={(e) =>
-                            setNewT(prev => ({ ...prev, type: e.target.value }))
-                        }>
-                        <option value="expense">Expense</option>
-                        <option value="income">Income</option>
-                    </select>
-
-                    <DatePicker
-                        selected={newT.date ? new Date(newT.date) : null}
-                        onChange={(date) =>
-                            setNewT(prev => ({
-                                ...prev,
-                                date: date.toISOString().split("T")[0]
-                            }))
-                        }
-                        placeholderText="Select date"
-                        className="w-full mb-3 p-2 bg-black text-white border border-gray-600 rounded"
-                    />
-
-                    
-                    <div className="flex justify-end gap-3 mt-4">
-                        <button
-                            onClick={() => setShowAddModal(false)}
-                            className="text-gray-400">
-                            Cancel
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                addTransaction(newT);
-                                setShowAddModal(false);
-                                setNewT({
-                                    title: "",
-                                    amount: "",
-                                    category: "",
-                                    type: "expense",
-                                    date: ""
-                                });
-                            }}
-                            className="text-green-500">
-                            Add
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )}
+        
     </div>
   )
 }
