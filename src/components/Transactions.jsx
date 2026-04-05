@@ -1,6 +1,7 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
+import TransactionRows from "./TransactionRow";
 
 const Transactions = ({ transactions, addTransaction, editTransaction, deleteTransaction, isAdmin, openAddModal }) => {
 
@@ -74,13 +75,13 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
   return (
     <div className='bg-[#0A0A0A] border-l border-[#666B74] w-full'>
         {/* Sub Heading & Button */}
-        <div className='flex'>
+          <div className='flex items-center justify-between'>
             <div>
                 <h1 className='text-white text-4xl font-bold m-3 mb-1 w-fit'>Transactions</h1>
                   <p className="text-[#666B74] pl-3">Manage and track all your transactions</p>
             </div>
             
-            <div className='place-content-center absolute right-0 ml-5 flex'>
+            <div className='place-content-center ml-5 flex'>
                   
                   {isAdmin && (
                       <button
@@ -171,71 +172,14 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
 
         </div>
         {/* Transactions List */}
-        <div className="border border-[#666B74] rounded-2xl m-3 p-3">
-              <div className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr] text-gray-400 px-4 py-2 text-sm border-b border-[#2a2a2a]">
-                  <p>Transaction</p>
-                  <p>Category</p>
-                  <p> Date</p>
-                  <p> Status</p>
-                  <p className="text-right">Amount</p>
-              </div>
-              <div className='mt-3 overflow-y-auto no-scrollbar' style={{ maxHeight: "58vh" }}>
-                  {
-                      displayTransactions.length === 0
-                          ? (<p className='text-[#666B74] mt-0 pl-5'>No transactions found.</p>)
-                          : (
-                              displayTransactions.map(
-                                  transaction => (
-                                      <div key={transaction.id}
-                                          className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr] items-center bg-[#111111] p-4 rounded-xl mb-3 border border-[#2a2a2a] hover:bg-[#1a1a1a] transition">
-
-                                          <div className="flex items-center gap-3">
-                                              <div className="w-10 h-10 bg-[#D4AF37] rounded-lg flex items-center justify-center">
-                                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" ><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5M10 9H8m8 4H8m8 4H8" /></g></svg>
-                                              </div>
-
-                                              <div>
-                                                  <p className="text-white font-semibold text-sm">{transaction.title}</p>
-                                              </div>
-                                          </div>
-
-                                          <p className="text-gray-400 text-sm">{transaction.category}</p>
-
-                                          <p className="text-gray-400">{transaction.date}</p>
-
-                                          <p className="text-green-400 bg-green-400/10 px-3 py-1 rounded-full w-fit text-xs">
-                                              Completed
-                                          </p>
-
-                                          <div className="text-right">
-                                              <p className={`font-semibold text-sm ${transaction.type === "income" ? "text-green-400" : "text-red-400"
-                                                  }`}>
-                                                  {transaction.type === "income" ? "+" : "-"}₹{transaction.amount}
-                                              </p>
-
-                                              <p className="text-xs text-gray-400">
-                                                  {transaction.type}
-                                              </p>
-
-                                              {isAdmin && (
-                                                  <button
-                                                      onClick={() => {
-                                                          setEditingT(transaction);
-                                                          setFormData({ ...transaction });
-                                                      }}
-                                                      className="text-xs text-gray-500 hover:text-white mt-1">
-                                                      Edit
-                                                  </button>
-                                              )}
-                                          </div>
-
-                                      </div>
-                                  )
-                              )
-                          )
-                  }
-              </div>
-        </div>
+        <TransactionRows
+            transactions={displayTransactions}
+            isAdmin={isAdmin}
+            variant="full"
+            onEdit={(transaction) => {
+                setEditingT(transaction);
+                setFormData({ ...transaction });
+            }} />
         {/* Edit Transactions */}
         {editingT && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center">

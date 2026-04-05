@@ -1,6 +1,7 @@
 import CategoryPieChart from "./Charts/CategoryPieChart";
 import IncomeExpenseChart from "./Charts/IncomeExpenseChart";
 import SummaryCard from "./SummaryCard"
+import TransactionRows from "./TransactionRow";
 
 
 const Dashboard = ({isAdmin, openAddModal, transactions}) => {
@@ -51,13 +52,17 @@ const Dashboard = ({isAdmin, openAddModal, transactions}) => {
     value: categoryMap[key]
   }));
 
+  const recentTransactions = [...transactions]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 5);
+
 
   return (
-    <div className='bg-[#0A0A0A] border-l border-[#666B74] h-screen w-full'>
-      <div className='flex'>
-        <h1 className='text-white text-4xl font-bold m-3 w-fit'>Dashboard</h1>
+    <div className='bg-[#0A0A0A] border-l border-[#666B74] w-full'>
+      <div className='flex items-center justify-between'>
+        <h1 className='text-white text-4xl font-bold m-5'>Dashboard</h1>
         {
-            isAdmin ? <button onClick={openAddModal} className='bg-[#D4AF37] absolute right-0 text-black px-3 py-1 rounded-lg m-5'>+ Add Transaction</button>:null
+          isAdmin ? <button onClick={openAddModal} className='bg-[#D4AF37] text-black px-3 py-1 rounded-lg m-5 hover:bg-[#a98e35]'>+ Add Transaction</button>:null
         }
       </div>
       {/* General Summary */}
@@ -99,6 +104,13 @@ const Dashboard = ({isAdmin, openAddModal, transactions}) => {
         {/* CATEGORY PIE */}
         <CategoryPieChart data={pieData} />
 
+      </div>
+      <div>
+        <TransactionRows 
+          transactions={transactions}
+          variant="recent"
+          title="Recent Transactions"
+        />
       </div>
     </div>
   )
