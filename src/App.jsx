@@ -7,6 +7,9 @@ import Insights from "./components/Insights";
 import Transactions from "./components/Transactions";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import toast from 'react-hot-toast';
+
+
 
 function App() {
 
@@ -28,6 +31,7 @@ function App() {
 
   function switchAdmin() {
     setAdmin(prev => !prev);
+    isAdmin ? toast("Switched to Viewer Mode") : toast("Switched to Admin Mode");
   }
 
 
@@ -51,18 +55,21 @@ function App() {
       type: "expense",
       date: ""
     });
+    toast.success("Transaction added successfully!");
   }
 
   function editTransaction(updatedT) {
     setTransactions(prev =>
       prev.map(transaction => transaction.id === updatedT.id ? updatedT : transaction)
     );
+    toast.success("Transaction updated successfully!");
   }
 
   function deleteTransaction(id) {
     setTransactions(prev =>
       prev.filter(transaction => transaction.id !== id)
     );
+    toast.success("Transaction deleted successfully!");
   }
 
 
@@ -106,7 +113,7 @@ function App() {
       </BrowserRouter>
       {/* Adding Transaction */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center">
           <div className="bg-[#111111] p-6 rounded-xl w-96">
             <h2 className="text-white text-xl mb-4">Add Transaction</h2>
             <input
