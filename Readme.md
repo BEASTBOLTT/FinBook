@@ -89,12 +89,16 @@ It simulates a real-world financial system with:
     │   │   ├── Dashboard/
     │   │   ├── Transactions/
     │   │   ├── Insights/
-    │   │   ├── Charts/
+    │   │   ├── Header/
+    │   │   ├── SummaryCards/
+    │   │   ├── TransactionRow/
     │   │   ├── Sidebar/
-    │   │   └── UI/
-    │   ├── pages/
-    │   ├── hooks/
-    │   ├── utils/
+    │   │   └── Charts/
+    |   │       ├── CategoryPieChart/
+    |   │       └── IncomeExpenseChart/
+    │   │    
+    │   ├── main.jsx
+    │   ├── index.css
     │   └── App.jsx
     │
     ├── public/
