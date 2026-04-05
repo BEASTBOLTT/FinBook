@@ -1,4 +1,4 @@
-import { BrowserRouter, createBrowserRouter, createRoutesFromElements, Route, Routes, RouterProvider } from "react-router-dom"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Header from "./components/Header"
 import { useState, useEffect } from "react"
 import Sidebar from "./components/Sidebar";
@@ -47,38 +47,42 @@ function App() {
 
 
   return (
-    <div>
+    <div className="h-screen flex flex-col">
+      {/* Header */}
       <Header isAdmin={isAdmin} click={switchAdmin} />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={
-            <div className="flex">
-              <Sidebar />
-              <Dashboard
-                isAdmin={isAdmin}
-                transactions={transactions}
-                addTransaction={addTransaction}
-              />
-            </div>
-          } />
-          <Route path="/Insights" element={
-            <div className="flex">
-              <Sidebar />
-              <Insights 
-              transactions = {transactions}/>
-            </div>} />
-          <Route path="/transactions" element={
-            <div className="flex">
-              <Sidebar />
-              <Transactions
-                isAdmin={isAdmin}
-                transactions={transactions}
-                addTransaction={addTransaction}
-                editTransaction={editTransaction}
-                deleteTransaction={deleteTransaction}
-              />
-            </div>} />
-        </Routes>
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar />
+          {/* Routing */}
+          <div className="flex-1 overflow-y-auto no-scrollbar bg-[#0A0A0A]">
+            <Routes>
+              <Route path="/" element={
+                <div className="flex">
+                  <Dashboard
+                    isAdmin={isAdmin}
+                    transactions={transactions}
+                    addTransaction={addTransaction}
+                  />
+                </div>
+              } />
+              <Route path="/Insights" element={
+                <div className="flex">
+                  <Insights
+                    transactions={transactions} />
+                </div>} />
+              <Route path="/transactions" element={
+                <div className="flex">
+                  <Transactions
+                    isAdmin={isAdmin}
+                    transactions={transactions}
+                    addTransaction={addTransaction}
+                    editTransaction={editTransaction}
+                    deleteTransaction={deleteTransaction}
+                  />
+                </div>} />
+            </Routes>
+          </div>
+        </div>
       </BrowserRouter>
     </div>
   )

@@ -4,6 +4,7 @@ import { useState } from "react";
 
 const Transactions = ({ transactions, addTransaction, editTransaction, deleteTransaction, isAdmin }) => {
 
+    // CSV Function
     function handleExportCSV() {
         if (transactions.length === 0) {
             alert("No transactions to export");
@@ -33,7 +34,7 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
         link.download = "transactions.csv";
         link.click();
     }
-
+    // JSON Function
     function handleExportJSON() {
         if (transactions.length === 0) {
             alert("No transactions to export");
@@ -52,7 +53,7 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
         link.download = "transactions.json";
         link.click();
     }
-
+    // useStates
     const [editingT, setEditingT] = useState(null);
     const [formData, setFormData] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -78,8 +79,9 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
     });
 
   return (
-    <div className='bg-[#0A0A0A] border-l border-[#666B74] h-screen w-full'>
+    <div className='bg-[#0A0A0A] border-l border-[#666B74] w-full'>
         
+        {/* Sub Heading & Button */}
         <div className='flex'>
             <div>
                 <h1 className='text-white text-4xl font-bold m-3 mb-1 w-fit'>Transactions</h1>
@@ -130,51 +132,53 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
             </div>
             
         </div>
-          <div className="flex items-center justify-between px-4 mt-4 mb-3">
+        {/* Search and Filter */}
+        <div className="flex items-center justify-between px-4 mt-4 mb-3">
 
-              <input
-                  type="text"
-                  placeholder=" Search transactions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-[#111111] border border-[#2a2a2a] text-white px-3 py-2 rounded-lg outline-none w-full mr-2"
-              />
+            <input
+                type="text"
+                placeholder=" Search transactions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-[#111111] border border-[#2a2a2a] text-white px-3 py-2 rounded-lg outline-none w-full mr-2"
+            />
 
-              <div className="flex gap-2">
+            <div className="flex gap-2">
 
-                  <button
-                      onClick={() => setFilterType("all")}
-                      className={`px-3 py-1 rounded-lg text-sm ${filterType === "all"
-                          ? "bg-[#D4AF37] text-black"
-                          : "bg-[#111111] text-gray-400"
-                          }`}
-                  >
-                      All
-                  </button>
+                <button
+                    onClick={() => setFilterType("all")}
+                    className={`px-3 py-1 rounded-lg text-sm ${filterType === "all"
+                        ? "bg-[#D4AF37] text-black"
+                        : "bg-[#111111] text-gray-400"
+                        }`}
+                >
+                    All
+                </button>
 
-                  <button
-                      onClick={() => setFilterType("income")}
-                      className={`px-3 py-1 rounded-lg text-sm ${filterType === "income"
-                          ? "bg-green-500 text-black"
-                          : "bg-[#111111] text-gray-400"
-                          }`}
-                  >
-                      Income
-                  </button>
+                <button
+                    onClick={() => setFilterType("income")}
+                    className={`px-3 py-1 rounded-lg text-sm ${filterType === "income"
+                        ? "bg-green-500 text-black"
+                        : "bg-[#111111] text-gray-400"
+                        }`}
+                >
+                    Income
+                </button>
 
-                  <button
-                      onClick={() => setFilterType("expense")}
-                      className={`px-3 py-1 rounded-lg text-sm ${filterType === "expense"
-                          ? "bg-red-500 text-black"
-                          : "bg-[#111111] text-gray-400"
-                          }`}
-                  >
-                      Expense
-                  </button>
+                <button
+                    onClick={() => setFilterType("expense")}
+                    className={`px-3 py-1 rounded-lg text-sm ${filterType === "expense"
+                        ? "bg-red-500 text-black"
+                        : "bg-[#111111] text-gray-400"
+                        }`}
+                >
+                    Expense
+                </button>
 
-              </div>
+            </div>
 
-          </div>
+        </div>
+        {/* Transactions List */}
         <div className="border border-[#666B74] rounded-2xl m-3 p-3">
               <div className="grid grid-cols-[2fr_1.2fr_1fr_1fr_1fr] text-gray-400 px-4 py-2 text-sm border-b border-[#2a2a2a]">
                   <p>Transaction</p>
@@ -183,7 +187,7 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
                   <p> Status</p>
                   <p className="text-right">Amount</p>
               </div>
-              <div className='mt-5 overflow-y-auto no-scrollbar' style={{ maxHeight: "65vh" }}>
+              <div className='mt-3 overflow-y-auto no-scrollbar' style={{ maxHeight: "58vh" }}>
                   {
                       displayTransactions.length === 0
                           ? (<p className='text-[#666B74] mt-0 pl-5'>No transactions found.</p>)
@@ -214,7 +218,7 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
                                           <div className="text-right">
                                               <p className={`font-semibold text-sm ${transaction.type === "income" ? "text-green-400" : "text-red-400"
                                                   }`}>
-                                                  {transaction.type === "income" ? "+" : "-"}${transaction.amount}
+                                                  {transaction.type === "income" ? "+" : "-"}₹{transaction.amount}
                                               </p>
 
                                               <p className="text-xs text-gray-400">
@@ -240,7 +244,7 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
                   }
               </div>
         </div>
-        
+        {/* Edit Transactions */}
         {editingT && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
 
@@ -289,6 +293,7 @@ const Transactions = ({ transactions, addTransaction, editTransaction, deleteTra
                 </div>
             </div>
         )}
+        {/* Adding Transaction */}
         {showAddModal && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
                 <div className="bg-[#111111] p-6 rounded-xl w-96">

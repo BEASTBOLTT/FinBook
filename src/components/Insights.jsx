@@ -1,4 +1,4 @@
-
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend} from "recharts";
 
 const Insights = ({transactions}) => {
 
@@ -26,14 +26,82 @@ const Insights = ({transactions}) => {
 
   const netSavings = totalIncome - totalExpense;
 
+  const chartData = thisMonthTransactions.map(t => ({
+    date: t.date,
+    income: t.type === "income" ? t.amount : 0,
+    expense: t.type === "expense" ? t.amount : 0
+  }));
+  chartData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  const categoryMap = {};
+
+  thisMonthTransactions.forEach(t => {
+    if (t.type === "expense") {
+      if (!categoryMap[t.category]) {
+        categoryMap[t.category] = 0;
+      }
+      categoryMap[t.category] += t.amount;
+    }
+  });
+
+  const pieData = Object.keys(categoryMap).map(key => ({
+    name: key,
+    value: categoryMap[key]
+  }));
+
+  let topCategory = "N/A";
+  let maxValue = 0;
+
+  pieData.forEach(item => {
+    if (item.value > maxValue) {
+      maxValue = item.value;
+      topCategory = item.name;
+    }
+  });
+
+  const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  const lastMonthTransactions = transactions.filter(t => {
+    const date = new Date(t.date);
+    return (
+      date.getMonth() === lastMonth &&
+      date.getFullYear() === lastMonthYear
+    );
+  });
+
+  let lastMonthExpense = 0;
+
+  lastMonthTransactions.forEach(t => {
+    if (t.type === "expense") {
+      lastMonthExpense += t.amount;
+    }
+  });
+  let expenseChange = 0;
+
+  if (lastMonthExpense > 0) {
+    expenseChange = ((totalExpense - lastMonthExpense) / lastMonthExpense) * 100;
+  }
+  let spendingRatio = 0;
+
+  if (totalIncome > 0) {
+    spendingRatio = (totalExpense / totalIncome) * 100;
+  }
+
+  const savingsText = netSavings > 0
+      ? `You saved ₹${netSavings} this month`
+      : "You spent more than you earned";
+
 
   return (
-      <div className='bg-[#0A0A0A] border-l border-[#666B74] h-screen w-full'>
-        <h1 className='text-white text-4xl font-bold m-3 w-fit'>Insights</h1>
+    <div className='bg-[#0A0A0A] border-l border-[#666B74] w-full'>
+      <h1 className='text-white text-4xl font-bold m-3 mb-1 w-fit'>Insights</h1>
+      <p className="text-[#666B74] pl-3 mt-1">Smart analysis and recommendations for your finances</p>
+      {/* General Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
 
         
-        <div className="bg-[#111111] p-5 rounded-2xl border border-[#2a2a2a] flex flex-col gap-4 hover:border-[#D4AF37] transition-all duration-200">
+        <div className="bg-[#111111] p-5 rounded-2xl border border-[#2a2a2a] flex flex-col gap-4 hover:border-[#D4AF37] transition-all duration-200 ">
 
           <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="white" ><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z" /><path  d="m7 14l2.293-2.293a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 0 1.414 0L17 10m0 0v2.5m0-2.5h-2.5" /></g></svg>
@@ -44,7 +112,7 @@ const Insights = ({transactions}) => {
           </p>
 
           <h2 className="text-white text-3xl font-bold tracking-tight">
-            ${totalIncome}
+            ₹{totalIncome}
           </h2>
           
           <p className="text-green-400 text-sm">
@@ -65,7 +133,7 @@ const Insights = ({transactions}) => {
           </p>
 
           <h2 className="text-white text-3xl font-bold tracking-tight">
-            ${totalExpense}
+            ₹{totalExpense}
           </h2>
 
           <p className="text-red-400 text-sm">
@@ -86,7 +154,7 @@ const Insights = ({transactions}) => {
           </p>
 
           <h2 className="text-white text-3xl font-bold tracking-tight">
-            ${netSavings}
+            ₹{netSavings}
           </h2>
 
           <p className="text-yellow-400 text-sm">
@@ -95,7 +163,93 @@ const Insights = ({transactions}) => {
 
           </div>
 
+      </div>
+      {/* Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+
+        {/* INCOME VS EXPENSE */}
+        <div className="bg-[#111111] p-5 rounded-2xl border border-[#2a2a2a]hover:scale-[1.02] hover:border-[#D4AF37] transition-all duration-200">
+          <h3 className="text-white text-lg mb-4">Income vs Expense</h3>
+
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={chartData}>
+              <Legend />
+              <XAxis dataKey="date" stroke="#666" />
+              <YAxis stroke="#666" />
+              <Tooltip />
+
+              <Line type="monotone" dataKey="income" stroke="#22c55e" strokeWidth={2} />
+              <Line type="monotone" dataKey="expense" stroke="#ef4444" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
+
+        {/* CATEGORY PIE */}
+        <div className="bg-[#111111] p-5 rounded-2xl border border-[#2a2a2a]hover:scale-[1.02] hover:border-[#D4AF37] transition-all duration-200">
+          <h3 className="text-white text-lg mb-4">Expense Breakdown</h3>
+
+          <ResponsiveContainer width="100%" height={250}>
+            <PieChart>
+              <Tooltip />
+              <Legend />
+              <Pie
+                data={pieData}
+                dataKey="value"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                label={({ name, percent }) =>`${name}: ${(percent * 100).toFixed(0)}%`}>
+                {pieData.map((entry, index) => (
+                  <Cell
+                    key={index}
+                    fill={["#22c55e", "#ef4444", "#facc15", "#3b82f6"][index % 4]}
+                  />
+                ))}
+              </Pie>
+            </PieChart>
+            
+          </ResponsiveContainer>
+        </div>
+
+      </div>
+      {/* Smart Suggestions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+
+        {/* TOP CATEGORY */}
+        <div className="bg-[#111111] p-5 rounded-2xl border border-[#2a2a2a]hover:scale-[1.02] hover:border-[#D4AF37] transition-all duration-200">
+          <p className="text-gray-400 text-sm">Top Spending Category</p>
+          <h3 className="text-white text-xl mt-2 font-semibold">
+            {topCategory}
+          </h3>
+        </div>
+
+        {/* MONTHLY COMPARISON */}
+        <div className="bg-[#111111] p-5 rounded-2xl border border-[#2a2a2a]hover:scale-[1.02] hover:border-[#D4AF37] transition-all duration-200">
+          <p className="text-gray-400 text-sm">Monthly Comparison</p>
+          <h3 className={`text-xl mt-2 font-semibold ${expenseChange > 0 ? "text-red-400" : "text-green-400"
+            }`}>
+            {expenseChange.toFixed(1)}%
+          </h3>
+          <p className="text-gray-500 text-sm">vs last month</p>
+        </div>
+
+        {/* SPENDING RATIO */}
+        <div className="bg-[#111111] p-5 rounded-2xl border border-[#2a2a2a]hover:scale-[1.02] hover:border-[#D4AF37] transition-all duration-200">
+          <p className="text-gray-400 text-sm">Spending Ratio</p>
+          <h3 className="text-white text-xl mt-2 font-semibold">
+            {spendingRatio.toFixed(0)}%
+          </h3>
+        </div>
+
+        {/* SAVINGS */}
+        <div className="bg-[#111111] p-5 rounded-2xl border border-[#2a2a2a]hover:scale-[1.02] hover:border-[#D4AF37] transition-all duration-200">
+          <p className="text-gray-400 text-sm">Savings Insight</p>
+          <h3 className="text-white text-lg mt-2">
+            {savingsText}
+          </h3>
+        </div>
+
+      </div>
     </div>
   )
 }
